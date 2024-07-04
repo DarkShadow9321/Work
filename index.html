@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自訂表單</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #555;
+        }
+
+        .container {
+            background: #fff;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-section input,
+        .form-section select,
+        .form-section button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .form-section button {
+            background-color: #5cb85c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-section button:hover {
+            background-color: #4cae4c;
+        }
+
+        .question-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+
+        .options {
+            margin-left: 20px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .option-item input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .option-item button {
+            background-color: #d9534f;
+            border: none;
+            color: #fff;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .option-item button:hover {
+            background-color: #c9302c;
+        }
+
+        .lock-button {
+            background-color: #0275d8;
+            border: none;
+            color: #fff;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .lock-button:hover {
+            background-color: #0275d8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="homePage">
+        <h1>問卷調查</h1>
+        <p>歡迎使用我們的問卷調查設計工具。透過這個工具，您可以輕鬆設計和管理問卷調查。</p>
+        <button type="button" onclick="startDesign()">開始設計問卷</button>
+    </div>
+
+    <div class="container" id="designPage" style="display:none;">
+
+        <div class="form-section">
+            <label for="formName">
+                <h1>表單名稱:</h1>
+            </label>
+            <input type="text" id="formName" name="formName">
+        </div>
+        <form id="customForm">
+            <div id="mandatoryQuestionsContainer">
+                <div class="form-section">
+                    <label for="name">
+                        <h3>姓名:</h3>
+                    </label>
+                    <input type="text" id="name" name="name">
+                </div>
+                <div class="form-section">
+                    <label for="email">
+                        <h3>個人信箱:</h3>
+                    </label>
+                    <input type="email" id="email" name="email">
+                </div>
+                <div class="form-section">
+                    <label for="age">
+                        <h3>年齡:</h3>
+                    </label>
+                    <select id="age" name="age">
+                        <option value="Age">請選擇年齡</option>
+                        <option value="20-25">20-25</option>
+                        <option value="25-30">25-30</option>
+                        <option value="30-35">30-35</option>
+                        <option value="35-40">35-40</option>
+                        <option value="40-45">40-45</option>
+                        <option value="45-50">45-50</option>
+                        <option value="50-60">50-60</option>
+                    </select>
+                </div>
+                <div class="form-section">
+                    <label for="education">
+                        <h3>教育程度:</h3>
+                    </label>
+                    <select id="education" name="education">
+                        <option value="Edu">請選擇教育程度</option>
+                        <option value="PhD">博士</option>
+                        <option value="Masters">碩士</option>
+                        <option value="Bachelors">大學/大專</option>
+                        <option value="HighSchool">高中</option>
+                        <option value="BelowHighSchool">高中以下</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <button type="button" onclick="addQuestion()">新增題目</button>
+            </div>
+
+            <form id="customForm">
+                <div id="questionsContainer"></div>
+                <button type="submit">提交表單</button>
+            </form>
+    </div>
+
+    <script>
+        let questionCount = 0;
+
+        const startDesign = () => {
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('designPage').style.display = 'block';
+        }
+
+        const addQuestion = () => {
+            questionCount++;
+            const questionsContainer = document.getElementById('questionsContainer');
+
+            const questionItem = document.createElement('div');
+            questionItem.className = 'question-item';
+            questionItem.id = `question${questionCount}`;
+
+            questionItem.innerHTML = `
+        <div>
+            <label for="question${questionCount}Text">題目:</label>
+            <input type="text" id="question${questionCount}Text" name="question${questionCount}Text">
+        </div>
+        <div>
+            <label for="question${questionCount}Type">題型:</label>
+            <select id="question${questionCount}Type" name="question${questionCount}Type" onchange="toggleOptions(${questionCount})">
+                <option value="likert5">李特克五點量表</option>
+                <option value="likert7">李特克七點量表</option>
+                <option value="checkbox">勾選題(多選)</option>
+                <option value="radio">勾選題(單選)</option>
+                <option value="truefalse">是非題</option>
+                <option value="dropdown">下拉選單</option>
+            </select>
+        </div>
+        <div id="options${questionCount}" class="options" style="display: none;">
+            <label>選項:</label>
+            <button type="button" onclick="addOption(${questionCount})">新增選項</button>
+            <div id="optionList${questionCount}"></div>
+        </div>
+        <div id="answer${questionCount}" class="answers"></div>
+        <button type="button" onclick="removeQuestion(${questionCount})">刪除題目</button>
+        <button type="button" class="lock-button" onclick="confirmRemoveQuestion(${questionCount})">確認題目</button>
+    `;
+
+            questionsContainer.appendChild(questionItem);
+        }
+
+        const confirmRemoveQuestion = (questionId) => {
+            const questionItem = document.getElementById(`question${questionId}`);
+            const deleteButton = questionItem.querySelector(`[onclick='removeQuestion(${questionId})']`);
+            const confirmButton = questionItem.querySelector(`[onclick='confirmRemoveQuestion(${questionId})']`);
+            const inputs = questionItem.querySelectorAll('input, select, button:not([onclick*="confirmRemoveQuestion"])');
+
+            if (deleteButton.style.display === 'none') {
+                deleteButton.style.display = 'inline';
+                confirmButton.textContent = '確認題目';
+                confirmButton.style.backgroundColor = '#0275d8';
+                inputs.forEach(input => input.disabled = false);
+            } else {
+                deleteButton.style.display = 'none';
+                confirmButton.textContent = '取消確認';
+                confirmButton.style.backgroundColor = '#5bc0de';
+                inputs.forEach(input => input.disabled = true);
+            }
+        }
+
+        const toggleOptions = (questionId) => {
+            const questionType = document.getElementById(`question${questionId}Type`).value;
+            const optionsDiv = document.getElementById(`options${questionId}`);
+            const answerDiv = document.getElementById(`answer${questionId}`);
+            optionsDiv.style.display = ['checkbox', 'radio', 'dropdown'].includes(questionType) ? 'block' : 'none';
+            answerDiv.innerHTML = '';
+
+            if (questionType === 'truefalse') {
+                answerDiv.innerHTML = `
+                    <input type="radio" id="true${questionId}" name="answer${questionId}" value="true">
+                    <label for="true${questionId}">是</label>
+                    <input type="radio" id="false${questionId}" name="answer${questionId}" value="false">
+                    <label for="false${questionId}">否</label>
+                `;
+            } else if (questionType === 'likert5') {
+                for (let i = 1; i <= 5; i++) {
+                    answerDiv.innerHTML += `
+                        <input type="radio" id="likert5_${questionId}_${i}" name="answer${questionId}" value="${i}">
+                        <label for="likert5_${questionId}_${i}">${i}</label>
+                    `;
+                }
+            } else if (questionType === 'likert7') {
+                for (let i = 1; i <= 7; i++) {
+                    answerDiv.innerHTML += `
+                        <input type="radio" id="likert7_${questionId}_${i}" name="answer${questionId}" value="${i}">
+                        <label for="likert7_${questionId}_${i}">${i}</label>
+                    `;
+                }
+            }
+        }
+
+        const addOption = (questionId) => {
+            const optionList = document.getElementById(`optionList${questionId}`);
+            const optionId = `option${questionId}_${optionList.children.length}`;
+            const optionInput = document.createElement('div');
+            optionInput.className = 'option-item';
+            optionInput.innerHTML = `
+                <input type="text" name="${optionId}" placeholder="選項">
+                <button type="button" onclick="removeOption(${questionId}, '${optionId}')">刪除選項</button>
+            `;
+            optionList.appendChild(optionInput);
+
+            updateAnswerOptions(questionId);
+        }
+
+        const removeOption = (questionId, optionId) => {
+            const optionElement = document.querySelector(`[name='${optionId}']`).parentElement;
+            optionElement.remove();
+            updateAnswerOptions(questionId);
+        }
+
+        const updateAnswerOptions = (questionId) => {
+            const questionType = document.getElementById(`question${questionId}Type`).value;
+            const answerDiv = document.getElementById(`answer${questionId}`);
+            const options = Array.from(document.querySelectorAll(`#optionList${questionId} input`)).map(input => input.value);
+            answerDiv.innerHTML = '';
+
+            if (questionType === 'checkbox') {
+                options.forEach(option => {
+                    answerDiv.innerHTML += `
+                        <input type="checkbox" name="answer${questionId}" value="${option}">
+                        <label>${option}</label>
+                    `;
+                });
+            } else if (questionType === 'radio') {
+                options.forEach(option => {
+                    answerDiv.innerHTML += `
+                        <input type="radio" name="answer${questionId}" value="${option}">
+                        <label>${option}</label>
+                    `;
+                });
+            } else if (questionType === 'dropdown') {
+                const select = document.createElement('select');
+                select.name = `answer${questionId}`;
+                options.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    select.appendChild(optionElement);
+                });
+                answerDiv.appendChild(select);
+            }
+        }
+
+        const removeQuestion = (questionId) => {
+            const questionItem = document.getElementById(`question${questionId}`);
+            questionItem.remove();
+        }
+    </script>
+</body>
+
+</html>
